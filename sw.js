@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nota-digital-v1';
+const CACHE_NAME = 'nota-digital-v2';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

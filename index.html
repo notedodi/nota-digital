@@ -1347,35 +1347,41 @@
             });
         }
 
+        let _inputTimer;
         function handleInput(id, field, value) {
             const index = items.findIndex(item => item.id === id);
             if (index > -1) {
+                // Update data model immediately
                 if (field === 'qty' || field === 'price') {
                     let num = Number(value) || 0;
                     if (num < 0) num = 0;
                     items[index][field] = num;
-
-                    // Update item total text (targeted, no re-render)
-                    const rowTotal = items[index].qty * items[index].price;
-                    document.querySelectorAll(`#total-${id}`).forEach(el => {
-                        el.textContent = formatRupiah(rowTotal);
-                    });
-                    // Update header badge if collapsed
-                    document.querySelectorAll(`#header-total-${id}`).forEach(el => {
-                        el.textContent = formatRupiah(rowTotal);
-                    });
                 } else {
                     items[index][field] = value;
-
-                    // Update header title (targeted, no re-render)
-                    const displayTitle = value.trim() !== '' ? value : `Barang #${index + 1}`;
-                    document.querySelectorAll(`#header-title-${id}`).forEach(el => {
-                        el.textContent = displayTitle;
-                        el.style.color = value ? 'var(--text-main)' : 'var(--primary)';
-                    });
                 }
-                updatePreview();
-                saveToLocalStorage();
+
+                // Defer ALL DOM updates so the input event completes
+                // without layout reflow — keeps mobile keyboard open
+                clearTimeout(_inputTimer);
+                _inputTimer = setTimeout(() => {
+                    if (field === 'qty' || field === 'price') {
+                        const rowTotal = items[index].qty * items[index].price;
+                        document.querySelectorAll(`#total-${id}`).forEach(el => {
+                            el.textContent = formatRupiah(rowTotal);
+                        });
+                        document.querySelectorAll(`#header-total-${id}`).forEach(el => {
+                            el.textContent = formatRupiah(rowTotal);
+                        });
+                    } else {
+                        const displayTitle = value.trim() !== '' ? value : `Barang #${index + 1}`;
+                        document.querySelectorAll(`#header-title-${id}`).forEach(el => {
+                            el.textContent = displayTitle;
+                            el.style.color = value ? 'var(--text-main)' : 'var(--primary)';
+                        });
+                    }
+                    updatePreview();
+                    saveToLocalStorage();
+                }, 50);
             }
         }
 
