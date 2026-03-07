@@ -1354,10 +1354,26 @@
                     let num = Number(value) || 0;
                     if (num < 0) num = 0;
                     items[index][field] = num;
+
+                    // Update item total text (targeted, no re-render)
+                    const rowTotal = items[index].qty * items[index].price;
+                    document.querySelectorAll(`#total-${id}`).forEach(el => {
+                        el.textContent = formatRupiah(rowTotal);
+                    });
+                    // Update header badge if collapsed
+                    document.querySelectorAll(`#header-total-${id}`).forEach(el => {
+                        el.textContent = formatRupiah(rowTotal);
+                    });
                 } else {
                     items[index][field] = value;
+
+                    // Update header title (targeted, no re-render)
+                    const displayTitle = value.trim() !== '' ? value : `Barang #${index + 1}`;
+                    document.querySelectorAll(`#header-title-${id}`).forEach(el => {
+                        el.textContent = displayTitle;
+                        el.style.color = value ? 'var(--text-main)' : 'var(--primary)';
+                    });
                 }
-                renderEditor();
                 updatePreview();
                 saveToLocalStorage();
             }
