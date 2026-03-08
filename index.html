@@ -1273,13 +1273,17 @@
                     <label>Keterangan (opsional)</label>
                     <input type="text" id="lemburDesc" class="form-control" placeholder="Nama pekerjaan...">
                 </div>
-                <button class="btn-add-lembur" onclick="addLembur()">
+                <button class="btn-add-lembur" id="btnAddLembur" onclick="addLembur()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                     Tambah Lembur
+                </button>
+                <button class="btn" id="btnCancelEditLembur" onclick="cancelEditLembur()"
+                    style="display:none;margin-top:8px;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;">
+                    Batal Edit
                 </button>
             </div>
 
@@ -1958,6 +1962,8 @@
             localStorage.setItem(LS_LEMBUR, JSON.stringify(data));
         }
 
+        let editingLemburId = null;
+
         function addLembur() {
             const dateEl = document.getElementById('lemburDate');
             const hoursEl = document.getElementById('lemburHours');
@@ -1971,16 +1977,60 @@
             if (hours <= 0) { showToast('Jam lembur harus lebih dari 0!'); return; }
 
             const data = getLembur();
-            data.unshift({ id: Date.now(), date, hours, desc: desc || '-' });
-            saveLembur(data);
 
-            // Reset form
-            hoursEl.value = '';
-            descEl.value = '';
-            dateEl.valueAsDate = new Date();
+            if (editingLemburId) {
+                // Edit mode
+                const idx = data.findIndex(e => e.id === editingLemburId);
+                if (idx > -1) {
+                    data[idx].date = date;
+                    data[idx].hours = hours;
+                    data[idx].desc = desc || '-';
+                }
+                saveLembur(data);
+                cancelEditLembur();
+                renderLembur();
+                showToast('Lembur berhasil diperbarui!');
+            } else {
+                // Add mode
+                data.unshift({ id: Date.now(), date, hours, desc: desc || '-' });
+                saveLembur(data);
+                hoursEl.value = '';
+                descEl.value = '';
+                dateEl.valueAsDate = new Date();
+                renderLembur();
+                showToast('Lembur berhasil ditambahkan!');
+            }
+        }
 
-            renderLembur();
-            showToast('Lembur berhasil ditambahkan!');
+        function editLembur(id) {
+            const data = getLembur();
+            const entry = data.find(e => e.id === id);
+            if (!entry) return;
+
+            editingLemburId = id;
+            document.getElementById('lemburDate').value = entry.date;
+            document.getElementById('lemburHours').value = entry.hours;
+            document.getElementById('lemburDesc').value = entry.desc === '-' ? '' : entry.desc;
+
+            const btn = document.getElementById('btnAddLembur');
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Perubahan';
+            btn.style.background = '#f59e0b';
+            document.getElementById('btnCancelEditLembur').style.display = 'block';
+
+            // Scroll to form
+            document.getElementById('tabLembur').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEditLembur() {
+            editingLemburId = null;
+            document.getElementById('lemburDate').valueAsDate = new Date();
+            document.getElementById('lemburHours').value = '';
+            document.getElementById('lemburDesc').value = '';
+
+            const btn = document.getElementById('btnAddLembur');
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Lembur';
+            btn.style.background = '';
+            document.getElementById('btnCancelEditLembur').style.display = 'none';
         }
 
         function deleteLembur(id) {
@@ -2062,6 +2112,9 @@
                         </div>
                         <div class="lembur-entry-hours">${entry.hours} jam</div>
                         <div class="lembur-entry-actions">
+                            <button onclick="editLembur(${entry.id})" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            </button>
                             <button class="btn-del-lembur" onclick="deleteLembur(${entry.id})" title="Hapus">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                             </button>
@@ -2119,8 +2172,6 @@
                 let rowsHTML = '';
                 sortedKeys.forEach(key => {
                     const group = groups[key];
-                    const gHours = group.entries.reduce((s, e) => s + e.hours, 0);
-                    rowsHTML += `<tr style="background:#eff6ff;"><td colspan="3" style="padding:8px 12px;font-weight:700;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">${group.label} &bull; ${gHours} jam</td></tr>`;
                     group.entries.sort((a, b) => b.date.localeCompare(a.date));
                     group.entries.forEach(e => {
                         rowsHTML += `<tr><td style="padding:8px 12px;font-size:13px;color:#6b7280;white-space:nowrap;">${formatDate(e.date)}</td><td style="padding:8px 12px;font-size:13px;">${e.desc}</td><td style="padding:8px 12px;font-size:13px;font-weight:700;color:#2563eb;text-align:right;white-space:nowrap;">${e.hours} jam</td></tr>`;
