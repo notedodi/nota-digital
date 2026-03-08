@@ -862,9 +862,164 @@
             }
 
             .tab-content#tabRiwayat,
-            .tab-content#tabPengaturan {
+            .tab-content#tabPengaturan,
+            .tab-content#tabLembur {
                 max-width: 600px;
             }
+        }
+
+        /* === Lembur Styles === */
+        .lembur-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .lembur-form .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lembur-form .form-row .form-group {
+            flex: 1;
+        }
+
+        .btn-add-lembur {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-add-lembur:hover {
+            background: var(--primary-hover);
+        }
+
+        .lembur-summary {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .lembur-stat {
+            flex: 1;
+            background: #eff6ff;
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .lembur-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .lembur-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .lembur-month-group {
+            margin-bottom: 16px;
+        }
+
+        .lembur-month-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .lembur-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            transition: box-shadow 0.2s;
+        }
+
+        .lembur-entry:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .lembur-entry-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            min-width: 70px;
+        }
+
+        .lembur-entry-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lembur-entry-desc {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lembur-entry-hours {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .lembur-entry-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .lembur-entry-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .lembur-entry-actions button:hover {
+            background: #f3f4f6;
+            color: var(--text-main);
+        }
+
+        .lembur-entry-actions .btn-del-lembur:hover {
+            color: var(--danger);
+            background: #fef2f2;
         }
     </style>
 </head>
@@ -1094,6 +1249,63 @@
         </div>
     </div>
 
+    <!-- === MOBILE TAB: Lembur === -->
+    <div class="tab-content" id="tabLembur">
+        <div class="panel">
+            <div class="panel-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg> Catatan Lembur</div>
+
+            <div class="lembur-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="lemburDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Lembur</label>
+                        <input type="number" id="lemburHours" class="form-control" placeholder="0" min="0" step="0.5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan (opsional)</label>
+                    <input type="text" id="lemburDesc" class="form-control" placeholder="Nama pekerjaan...">
+                </div>
+                <button class="btn-add-lembur" onclick="addLembur()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Tambah Lembur
+                </button>
+            </div>
+
+            <div class="lembur-summary" id="lemburSummary"></div>
+
+            <div class="riwayat-search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" id="lemburSearch" placeholder="Cari lembur..." oninput="renderLembur()">
+            </div>
+
+            <div id="lemburList"></div>
+
+            <button class="btn btn-primary" onclick="downloadLembur()" style="margin-top: 20px;">
+                Download Laporan (JPG)
+            </button>
+            <button class="btn" onclick="clearAllLembur()"
+                style="margin-top: 10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;">
+                Hapus Semua Lembur
+            </button>
+        </div>
+    </div>
+
     <!-- === Bottom Navigation === -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-tab active" onclick="switchTab('tabEditor')" id="navEditor">
@@ -1121,6 +1333,14 @@
             Riwayat
             <span class="nav-badge" id="riwayatBadge" style="display:none;">0</span>
         </button>
+        <button class="nav-tab" onclick="switchTab('tabLembur')" id="navLembur">
+            <span class="nav-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg></span>
+            Lembur
+        </button>
         <button class="nav-tab" onclick="switchTab('tabPengaturan')" id="navPengaturan">
             <span class="nav-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1138,6 +1358,7 @@
         const LS_FORM = 'nota_form';
         const LS_SETTINGS = 'nota_settings';
         const LS_HISTORY = 'nota_history';
+        const LS_LEMBUR = 'nota_lembur';
 
         // === State ===
         let items = [{ id: Date.now(), name: '', qty: 1, price: 0, isExpanded: true }];
@@ -1154,6 +1375,7 @@
                 tabEditor: 'navEditor',
                 tabPreview: 'navPreview',
                 tabRiwayat: 'navRiwayat',
+                tabLembur: 'navLembur',
                 tabPengaturan: 'navPengaturan'
             };
             document.getElementById(navMap[tabId]).classList.add('active');
@@ -1726,10 +1948,227 @@
             });
         }
 
+        // === Lembur ===
+        function getLembur() {
+            try { return JSON.parse(localStorage.getItem(LS_LEMBUR) || '[]'); }
+            catch { return []; }
+        }
+
+        function saveLembur(data) {
+            localStorage.setItem(LS_LEMBUR, JSON.stringify(data));
+        }
+
+        function addLembur() {
+            const dateEl = document.getElementById('lemburDate');
+            const hoursEl = document.getElementById('lemburHours');
+            const descEl = document.getElementById('lemburDesc');
+
+            const date = dateEl.value;
+            const hours = parseFloat(hoursEl.value) || 0;
+            const desc = descEl.value.trim();
+
+            if (!date) { showToast('Tanggal harus diisi!'); return; }
+            if (hours <= 0) { showToast('Jam lembur harus lebih dari 0!'); return; }
+
+            const data = getLembur();
+            data.unshift({ id: Date.now(), date, hours, desc: desc || '-' });
+            saveLembur(data);
+
+            // Reset form
+            hoursEl.value = '';
+            descEl.value = '';
+            dateEl.valueAsDate = new Date();
+
+            renderLembur();
+            showToast('Lembur berhasil ditambahkan!');
+        }
+
+        function deleteLembur(id) {
+            const data = getLembur();
+            const entry = data.find(e => e.id === id);
+            showConfirmModal(entry ? entry.desc : 'lembur ini', () => {
+                const updated = data.filter(e => e.id !== id);
+                saveLembur(updated);
+                renderLembur();
+                showToast('Lembur berhasil dihapus');
+            });
+        }
+
+        function renderLembur() {
+            const data = getLembur();
+            const container = document.getElementById('lemburList');
+            const summaryEl = document.getElementById('lemburSummary');
+            const searchInput = document.getElementById('lemburSearch');
+            const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+            // Summary
+            const totalHours = data.reduce((sum, e) => sum + e.hours, 0);
+            summaryEl.innerHTML = data.length > 0 ? `
+                <div class="lembur-stat">
+                    <div class="lembur-stat-value">${totalHours}</div>
+                    <div class="lembur-stat-label">Total Jam</div>
+                </div>
+                <div class="lembur-stat">
+                    <div class="lembur-stat-value">${data.length}</div>
+                    <div class="lembur-stat-label">Total Entri</div>
+                </div>
+            ` : '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="riwayat-empty"><div class="riwayat-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>Belum ada catatan lembur</div>';
+                return;
+            }
+
+            // Filter
+            const filtered = data.filter(e => {
+                if (!query) return true;
+                return e.desc.toLowerCase().includes(query) || formatDate(e.date).toLowerCase().includes(query);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="riwayat-empty">Tidak ditemukan lembur yang cocok</div>';
+                return;
+            }
+
+            // Group by month
+            const groups = {};
+            filtered.forEach(entry => {
+                const d = new Date(entry.date);
+                const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                const label = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                if (!groups[key]) groups[key] = { label, entries: [] };
+                groups[key].entries.push(entry);
+            });
+
+            // Sort groups descending
+            const sortedKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+            container.innerHTML = '';
+            sortedKeys.forEach(key => {
+                const group = groups[key];
+                const groupHours = group.entries.reduce((s, e) => s + e.hours, 0);
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'lembur-month-group';
+                groupDiv.innerHTML = `<div class="lembur-month-header">${group.label} &bull; ${groupHours} jam</div>`;
+
+                group.entries.sort((a, b) => b.date.localeCompare(a.date));
+                group.entries.forEach(entry => {
+                    const div = document.createElement('div');
+                    div.className = 'lembur-entry';
+                    div.innerHTML = `
+                        <div class="lembur-entry-date">${formatDate(entry.date)}</div>
+                        <div class="lembur-entry-info">
+                            <div class="lembur-entry-desc">${entry.desc}</div>
+                        </div>
+                        <div class="lembur-entry-hours">${entry.hours} jam</div>
+                        <div class="lembur-entry-actions">
+                            <button class="btn-del-lembur" onclick="deleteLembur(${entry.id})" title="Hapus">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    `;
+                    groupDiv.appendChild(div);
+                });
+
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function clearAllLembur() {
+            const data = getLembur();
+            if (data.length === 0) { showToast('Tidak ada data lembur'); return; }
+            showConfirmModal('semua data lembur (' + data.length + ' entri)', () => {
+                saveLembur([]);
+                renderLembur();
+                showToast('Semua data lembur berhasil dihapus');
+            });
+        }
+
         // === Initialize ===
+        document.getElementById('lemburDate').valueAsDate = new Date();
         renderEditor();
         updatePreview();
         updateRiwayatBadge();
+        renderLembur();
+
+        function downloadLembur() {
+            const data = getLembur();
+            if (data.length === 0) {
+                showToast('Belum ada data lembur untuk didownload!');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+
+            setTimeout(() => {
+                const totalHours = data.reduce((sum, e) => sum + e.hours, 0);
+
+                // Group by month
+                const groups = {};
+                data.forEach(entry => {
+                    const d = new Date(entry.date);
+                    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                    const label = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    if (!groups[key]) groups[key] = { label, entries: [] };
+                    groups[key].entries.push(entry);
+                });
+                const sortedKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+                // Build report HTML
+                let rowsHTML = '';
+                sortedKeys.forEach(key => {
+                    const group = groups[key];
+                    const gHours = group.entries.reduce((s, e) => s + e.hours, 0);
+                    rowsHTML += `<tr style="background:#eff6ff;"><td colspan="3" style="padding:8px 12px;font-weight:700;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">${group.label} &bull; ${gHours} jam</td></tr>`;
+                    group.entries.sort((a, b) => b.date.localeCompare(a.date));
+                    group.entries.forEach(e => {
+                        rowsHTML += `<tr><td style="padding:8px 12px;font-size:13px;color:#6b7280;white-space:nowrap;">${formatDate(e.date)}</td><td style="padding:8px 12px;font-size:13px;">${e.desc}</td><td style="padding:8px 12px;font-size:13px;font-weight:700;color:#2563eb;text-align:right;white-space:nowrap;">${e.hours} jam</td></tr>`;
+                    });
+                });
+
+                const reportWidth = (document.getElementById('receiptWidth').value || 400) + 'px';
+                const reportEl = document.createElement('div');
+                reportEl.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:' + reportWidth + ';background:#fff;font-family:Inter,system-ui,sans-serif;padding:24px;';
+                reportEl.innerHTML = `
+                    <div style="text-align:center;margin-bottom:16px;">
+                        <div style="font-size:18px;font-weight:700;color:#111827;">Laporan Lembur</div>
+                        <div style="font-size:12px;color:#6b7280;margin-top:4px;">KANG DODI</div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-bottom:16px;">
+                        <div style="flex:1;background:#eff6ff;border-radius:8px;padding:14px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#2563eb;">${totalHours}</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Total Jam</div>
+                        </div>
+                        <div style="flex:1;background:#eff6ff;border-radius:8px;padding:14px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#2563eb;">${data.length}</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Total Entri</div>
+                        </div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+                        <thead><tr style="background:#f9fafb;"><th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Tanggal</th><th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Keterangan</th><th style="padding:8px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;">Jam</th></tr></thead>
+                        <tbody>${rowsHTML}</tbody>
+                    </table>
+                    <div style="text-align:center;margin-top:16px;font-size:11px;color:#9ca3af;">Dibuat: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+                `;
+
+                document.body.appendChild(reportEl);
+
+                html2canvas(reportEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+                    document.body.removeChild(reportEl);
+                    const link = document.createElement('a');
+                    link.download = `Laporan_Lembur_${new Date().toISOString().slice(0, 10)}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    link.click();
+                    loading.style.display = 'none';
+                    showToast('Laporan lembur berhasil didownload!');
+                }).catch(() => {
+                    document.body.removeChild(reportEl);
+                    loading.style.display = 'none';
+                    showToast('Gagal membuat laporan');
+                });
+            }, 100);
+        }
 
         // Handle resize: show correct layout
         function handleResize() {
