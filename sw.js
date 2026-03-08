@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nota-digital-v3';
+const CACHE_NAME = 'nota-digital-v4';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: clean up old caches & take control immediately
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -33,28 +33,39 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch: serve from cache first, then network
+// Fetch: network-first for HTML, cache-first for assets
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(event.request).then((response) => {
-                // Cache new requests dynamically (only same-origin and successful)
-                if (response && response.status === 200 && response.type === 'basic') {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
+    const isHTML = event.request.headers.get('accept')?.includes('text/html');
+    const isNavigation = event.request.mode === 'navigate';
+
+    if (isHTML || isNavigation) {
+        // Network-first for HTML pages — always get latest
+        event.respondWith(
+            fetch(event.request).then((response) => {
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseClone);
+                });
                 return response;
             }).catch(() => {
-                // Offline fallback for HTML pages
-                if (event.request.headers.get('accept').includes('text/html')) {
-                    return caches.match('/index.html');
-                }
-            });
-        })
-    );
+                return caches.match(event.request).then(r => r || caches.match('/index.html'));
+            })
+        );
+    } else {
+        // Cache-first for static assets (icons, fonts, scripts)
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                if (cachedResponse) return cachedResponse;
+                return fetch(event.request).then((response) => {
+                    if (response && response.status === 200) {
+                        const responseClone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return response;
+                });
+            })
+        );
+    }
 });
